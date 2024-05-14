@@ -32,8 +32,7 @@ class GetFilm {
     final response = await http.get(url, headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
-      'Authorization':
-          'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNjZjMGJjMWM4MTQ5Mzk5MGQ5NDIyMTk2MTE0N2ZkNCIsInN1YiI6IjY2MjRlYmFlY2I2ZGI1MDE2M2FlMWQxNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.GS6TUTpHhL2A9kz7a4-kb2kv0I6j8Z4UZz335Bk-bxs',
+      'Authorization': 'Bearer tokenkalian',
     });
     print(response.body);
 
