@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:mulai_flutter/config/config.dart';
 import 'package:mulai_flutter/model/film_model.dart';
+import 'package:mulai_flutter/services/get_film.dart';
 import 'package:mulai_flutter/theme.dart';
 import 'package:mulai_flutter/widget/row_film.dart';
 
@@ -14,58 +16,56 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<FilmModel> listOfPopularFilm = [];
+  List<FilmModel> listOfTopRatedFilm = [];
+
+  int currentIndex = 0;
+  bool isLoading = true;
+
+  getFilm() async {
+    listOfPopularFilm = await GetFilm().getPopularFilm();
+    listOfTopRatedFilm = await GetFilm().getTopRatedFilm();
+    setState(() {
+      isLoading = false;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    getFilm();
   }
-
-  List<FilmModel> listOfFilm = [
-    FilmModel(
-      title: '1917',
-      subtitle: 'Ini adalah Film Perang',
-      image: 'assets/images/bg_image.png',
-    ),
-    FilmModel(
-      title: 'Spiderman',
-      subtitle: 'Ini adalah Film Super hero',
-      image: 'assets/images/bg_image.png',
-    ),
-    FilmModel(
-      title: 'Batman',
-      subtitle: 'Ini adalah Film Kelalwar',
-      image: 'assets/images/bg_image.png',
-    ),
-  ];
-
-  List<Color> listOfColor = [Colors.red, Colors.yellow, Colors.green];
-  int currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            _appBar(),
-            _slideImage(),
-            _indicator(),
-            _rowFilm(),
-          ],
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            children: [
+              _appBar(),
+              _slideImage(),
+              _indicator(),
+              _rowFilm('Top Rated', listOfTopRatedFilm),
+              _rowFilm('Popular Film', listOfPopularFilm),
+              _rowFilm('Rick and Morthy', listOfPopularFilm),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  _rowFilm() {
+  _rowFilm(String title, List<FilmModel> list) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Recommend for you',
+                title,
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                 ),
@@ -85,9 +85,9 @@ class _HomePageState extends State<HomePage> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                for (var i = 0; i < listOfFilm.length; i++)
+                for (var i = 0; i < list.length; i++)
                   RowFilm(
-                    filmModel: listOfFilm[i],
+                    filmModel: list[i],
                   ),
               ],
             ),
@@ -103,7 +103,7 @@ class _HomePageState extends State<HomePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          for (var i = 0; i < listOfColor.length; i++)
+          for (var i = 0; i < listOfPopularFilm.length; i++)
             i == currentIndex
                 ? Container(
                     margin: EdgeInsets.symmetric(horizontal: 2),
@@ -143,84 +143,101 @@ class _HomePageState extends State<HomePage> {
   }
 
   _slideImage() {
-    return Container(
-        height: 200,
-        child: PageView.builder(
-          itemCount: listOfColor.length,
-          onPageChanged: (value) {
-            setState(() {
-              currentIndex = value;
-            });
-          },
-          itemBuilder: (context, index) {
-            return Stack(
-              children: [
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  margin: EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    image: DecorationImage(
-                      image: AssetImage(listOfFilm[index].image),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                Container(
-                  height: 200,
-                  width: double.infinity,
-                  margin: EdgeInsets.symmetric(horizontal: 10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(16),
-                    gradient: LinearGradient(
-                      colors: [
-                        mainColor,
-                        mainColor.withOpacity(0.9),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-                Container(
-                  width: 200,
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Watch popular movies ${listOfFilm[index].title}',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      Text(
-                        listOfFilm[index].subtitle,
-                        style: TextStyle(
-                          color: Color(0xffCCC8F5),
-                          // fontWeight: FontWeight.bold,
-                          fontSize: 10,
-                        ),
-                      ),
-                      Spacer(),
-                      ElevatedButton(
-                        onPressed: () {},
-                        child: Text(
-                          'Watch Now',
-                          style: TextStyle(
-                            color: mainColor,
+    return isLoading
+        ? Container(
+            height: 200,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: mainColor,
+              ),
+            ),
+          )
+        : Container(
+            height: 200,
+            child: PageView.builder(
+              onPageChanged: (value) {
+                var realIndex = value % listOfPopularFilm.length;
+
+                setState(() {
+                  currentIndex = realIndex;
+                });
+              },
+              itemBuilder: (context, index) {
+                var realIndex = index % listOfPopularFilm.length;
+                return Stack(
+                  children: [
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        image: DecorationImage(
+                          image: NetworkImage(
+                            '${baseImageUrl}original/${listOfPopularFilm[realIndex].backdropPath ?? ''}',
                           ),
+                          fit: BoxFit.cover,
                         ),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
-        ));
+                      ),
+                    ),
+                    Container(
+                      height: 200,
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        gradient: LinearGradient(
+                          colors: [
+                            mainColor,
+                            mainColor.withOpacity(0.9),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 200,
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${listOfPopularFilm[realIndex].title}',
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
+                          Text(
+                            listOfPopularFilm[realIndex].overview ?? '',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Color(0xffCCC8F5),
+                              // fontWeight: FontWeight.bold,
+                              fontSize: 10,
+                            ),
+                          ),
+                          Spacer(),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: Text(
+                              'Watch Now',
+                              style: TextStyle(
+                                color: mainColor,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ));
   }
 
   _appBar() {

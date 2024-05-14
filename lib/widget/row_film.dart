@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mulai_flutter/config/config.dart';
 import 'package:mulai_flutter/model/film_model.dart';
 
 class RowFilm extends StatelessWidget {
@@ -15,27 +16,34 @@ class RowFilm extends StatelessWidget {
       margin: EdgeInsets.only(right: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
             height: 150,
             width: 120,
             decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/bg_image.png'),
+                  image: NetworkImage(
+                    '${baseImageUrl}original/${filmModel.posterPath ?? ''}',
+                  ),
                   fit: BoxFit.cover,
                 ),
                 borderRadius: BorderRadius.circular(15)),
           ),
           Text(
-            filmModel.title,
+            filmModel.title ?? '',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               overflow: TextOverflow.ellipsis,
             ),
           ),
           Text(
-            filmModel.subtitle,
-            style: TextStyle(fontSize: 10),
+            filmModel.overview ?? "-",
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 10,
+            ),
           ),
         ],
       ),

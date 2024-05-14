@@ -29,7 +29,10 @@ class Item extends StatelessWidget {
             children: [
               Text(
                 'Swiss',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
               ),
               Icon(Icons.access_time_filled_outlined),
             ],
