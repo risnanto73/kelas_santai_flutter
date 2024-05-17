@@ -25,6 +25,8 @@ class _HomePageState extends State<HomePage> {
   getFilm() async {
     listOfPopularFilm = await GetFilm().getPopularFilm();
     listOfTopRatedFilm = await GetFilm().getTopRatedFilm();
+    listOfPopularFilmData = listOfPopularFilm;
+    listOfTopRatedFilmData = listOfTopRatedFilm;
     setState(() {
       isLoading = false;
     });
@@ -48,7 +50,7 @@ class _HomePageState extends State<HomePage> {
               _indicator(),
               _rowFilm('Top Rated', listOfTopRatedFilm),
               _rowFilm('Popular Film', listOfPopularFilm),
-              _rowFilm('Rick and Morthy', listOfPopularFilm),
+              // _rowFilm('Rick and Morthy', listOfPopularFilm),
             ],
           ),
         ),

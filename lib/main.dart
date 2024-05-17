@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mulai_flutter/home_page.dart';
-import 'package:mulai_flutter/login_page.dart';
+import 'package:mulai_flutter/view/home_page.dart';
+import 'package:mulai_flutter/view/login_page.dart';
 import 'package:mulai_flutter/theme.dart';
+import 'package:mulai_flutter/view/main_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,8 +22,8 @@ class MyApp extends StatelessWidget {
               namaUser: '',
             ),
       },
-      // home: LoginPage(),
-      initialRoute: '/loginPage',
+      home: MainPage(),
+      // initialRoute: '/loginPage',
     );
   }
 }

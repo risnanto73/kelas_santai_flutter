@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:mulai_flutter/home_page.dart';
+import 'package:mulai_flutter/view/home_page.dart';
 
 class LoginPage extends StatelessWidget {
   String password = '';

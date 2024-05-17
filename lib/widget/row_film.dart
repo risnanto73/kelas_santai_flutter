@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mulai_flutter/config/config.dart';
 import 'package:mulai_flutter/model/film_model.dart';
+import 'package:mulai_flutter/view/detail_page.dart';
 
 class RowFilm extends StatelessWidget {
   FilmModel filmModel;
@@ -11,41 +12,52 @@ class RowFilm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 120,
-      margin: EdgeInsets.only(right: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Container(
-            height: 150,
-            width: 120,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    '${baseImageUrl}original/${filmModel.posterPath ?? ''}',
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DetailPage(
+                filmId: filmModel.id.toString(),
+              ),
+            ));
+      },
+      child: Container(
+        width: 120,
+        margin: EdgeInsets.only(right: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              height: 150,
+              width: 120,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                      '${baseImageUrl}original/${filmModel.posterPath ?? ''}',
+                    ),
+                    fit: BoxFit.cover,
                   ),
-                  fit: BoxFit.cover,
-                ),
-                borderRadius: BorderRadius.circular(15)),
-          ),
-          Text(
-            filmModel.title ?? '',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
+                  borderRadius: BorderRadius.circular(15)),
+            ),
+            Text(
+              filmModel.title ?? '',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Text(
+              filmModel.overview ?? "-",
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 10,
+              ),
             ),
-          ),
-          Text(
-            filmModel.overview ?? "-",
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 10,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
