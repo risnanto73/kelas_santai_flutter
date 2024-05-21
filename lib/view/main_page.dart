@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mulai_flutter/theme.dart';
 import 'package:mulai_flutter/view/explore_page.dart';
-import 'package:mulai_flutter/view/home_page.dart';
+import 'package:mulai_flutter/view/home/home_page.dart';
 import 'package:mulai_flutter/widget/custom_bottom_navigation.dart';
 
 class MainPage extends StatefulWidget {

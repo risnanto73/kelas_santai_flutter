@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mulai_flutter/config/config.dart';
 import 'package:mulai_flutter/model/film_model.dart';
-import 'package:mulai_flutter/view/detail_page.dart';
+import 'package:mulai_flutter/view/detail/detail_page.dart';
 
 class RowFilm extends StatelessWidget {
   FilmModel filmModel;

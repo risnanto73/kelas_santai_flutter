@@ -1,61 +1,42 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:get/get.dart';
 import 'package:mulai_flutter/config/config.dart';
+import 'package:mulai_flutter/view/home/home_controller.dart';
 import 'package:mulai_flutter/model/film_model.dart';
 import 'package:mulai_flutter/services/get_film.dart';
 import 'package:mulai_flutter/theme.dart';
-import 'package:mulai_flutter/widget/row_film.dart';
+import 'package:mulai_flutter/view/home/widget/row_film.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends GetView<HomeController> {
   String namaUser;
   HomePage({super.key, required this.namaUser});
 
   @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  List<FilmModel> listOfPopularFilm = [];
-  List<FilmModel> listOfTopRatedFilm = [];
-
-  int currentIndex = 0;
-  bool isLoading = true;
-
-  getFilm() async {
-    listOfPopularFilm = await GetFilm().getPopularFilm();
-    listOfTopRatedFilm = await GetFilm().getTopRatedFilm();
-    listOfPopularFilmData = listOfPopularFilm;
-    listOfTopRatedFilmData = listOfTopRatedFilm;
-    setState(() {
-      isLoading = false;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getFilm();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: SafeArea(
-          child: Column(
-            children: [
-              _appBar(),
-              _slideImage(),
-              _indicator(),
-              _rowFilm('Top Rated', listOfTopRatedFilm),
-              _rowFilm('Popular Film', listOfPopularFilm),
-              // _rowFilm('Rick and Morthy', listOfPopularFilm),
-            ],
+    return GetBuilder<HomeController>(initState: (state) {
+      controller.getFilm();
+    }, builder: (context) {
+      return Scaffold(
+        body: SingleChildScrollView(
+          child: SafeArea(
+            child: Obx(
+              () => Column(
+                children: [
+                  _appBar(),
+                  _slideImage(),
+                  _indicator(),
+                  _rowFilm('Top Rated', controller.listOfTopRatedFilm),
+                  _rowFilm('Popular Film', controller.listOfPopularFilm),
+                  // _rowFilm('Rick and Morthy', listOfPopularFilm),
+                ],
+              ),
+            ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   _rowFilm(String title, List<FilmModel> list) {
@@ -105,8 +86,8 @@ class _HomePageState extends State<HomePage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          for (var i = 0; i < listOfPopularFilm.length; i++)
-            i == currentIndex
+          for (var i = 0; i < controller.listOfPopularFilm.length; i++)
+            i == controller.currentIndex
                 ? Container(
                     margin: EdgeInsets.symmetric(horizontal: 2),
                     width: 24,
@@ -145,7 +126,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   _slideImage() {
-    return isLoading
+    return controller.isLoading.value
         ? Container(
             height: 200,
             child: Center(
@@ -158,14 +139,15 @@ class _HomePageState extends State<HomePage> {
             height: 200,
             child: PageView.builder(
               onPageChanged: (value) {
-                var realIndex = value % listOfPopularFilm.length;
+                var realIndex = value % controller.listOfPopularFilm.length;
 
-                setState(() {
-                  currentIndex = realIndex;
-                });
+                controller.currentIndex.value = realIndex;
               },
               itemBuilder: (context, index) {
-                var realIndex = index % listOfPopularFilm.length;
+                print("Index : $index");
+                // var realIndex = index % listOfPopularFilm.length;
+                // print("Real Index: $realIndex");
+
                 return Stack(
                   children: [
                     Container(
@@ -176,7 +158,7 @@ class _HomePageState extends State<HomePage> {
                         borderRadius: BorderRadius.circular(16),
                         image: DecorationImage(
                           image: NetworkImage(
-                            '${baseImageUrl}original/${listOfPopularFilm[realIndex].backdropPath ?? ''}',
+                            '${baseImageUrl}original/${controller.listOfPopularFilm[index].backdropPath ?? ''}',
                           ),
                           fit: BoxFit.cover,
                         ),
@@ -204,7 +186,7 @@ class _HomePageState extends State<HomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${listOfPopularFilm[realIndex].title}',
+                            '${controller.listOfPopularFilm[index].title}',
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -214,7 +196,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           Text(
-                            listOfPopularFilm[realIndex].overview ?? '',
+                            controller.listOfPopularFilm[index].overview ?? '',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -263,7 +245,7 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
-                  'Hi, ${widget.namaUser}',
+                  'Hi, ${namaUser}',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 Text(
